@@ -10,7 +10,7 @@ pico_sdk_init()
 
 link_directories(libmicroros)
 add_executable(pico_micro_ros_example
-    pico_micro_ros_example.c
+    pub_sub_example.c
     pico_uart_transport.c
 )
 target_link_libraries(pico_micro_ros_example

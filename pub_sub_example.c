@@ -1,24 +1,38 @@
 #include <stdio.h>
-
 #include <rcl/rcl.h>
 #include <rcl/error_handling.h>
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
 #include <std_msgs/msg/int32.h>
 #include <rmw_microros/rmw_microros.h>
-
 #include "pico/stdlib.h"
 #include "pico_uart_transports.h"
 
 const uint LED_PIN = 25;
 
 rcl_publisher_t publisher;
-std_msgs__msg__Int32 msg;
+rcl_subscription_t subscriber;
+std_msgs__msg__Int32 send_msg;
+std_msgs__msg__Int32 recv_msg;
 
-void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
+void led_toggle() {
+      gpio_put(LED_PIN, 0);
+      sleep_ms(100);
+      gpio_put(LED_PIN, 1);
+}
+
+void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 {
-    rcl_ret_t ret = rcl_publish(&publisher, &msg, NULL);
-    msg.data++;
+  rcl_ret_t ret = rcl_publish(&publisher, &send_msg, NULL);
+  printf("Sent: %d\n",  (int)  send_msg.data);
+  send_msg.data = 100;
+}
+
+void subscription_callback(const void * msgin)
+{
+  const std_msgs__msg__Int32 * msg = (const std_msgs__msg__Int32 *)msgin;
+  printf("Received: %d\n",  (int)  msg->data);
+  led_toggle();
 }
 
 int main()
@@ -57,28 +71,43 @@ int main()
 
     rclc_support_init(&support, 0, NULL, &allocator);
 
+    // node init
     rclc_node_init_default(&node, "pico_node", "", &support);
+
+    // create publisher
     rclc_publisher_init_default(
         &publisher,
         &node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-        "pico_publisher");
+        "pub");
 
+    // create subscriber
+    rclc_subscription_init_default(
+        &subscriber,
+	&node,
+        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+        "sub");
+
+    // create timer
     rclc_timer_init_default(
         &timer,
         &support,
         RCL_MS_TO_NS(1000),
         timer_callback);
 
-    rclc_executor_init(&executor, &support.context, 1, &allocator);
+    send_msg.data = 0;
+    recv_msg.data = 0;
+
+    rclc_executor_init(&executor, &support.context, 2, &allocator);
     rclc_executor_add_timer(&executor, &timer);
+    rclc_executor_add_subscription(&executor, &subscriber, &recv_msg, &subscription_callback, ON_NEW_DATA);
 
     gpio_put(LED_PIN, 1);
 
-    msg.data = 0;
     while (true)
     {
         rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
+	sleep_ms(100);
     }
     return 0;
 }
