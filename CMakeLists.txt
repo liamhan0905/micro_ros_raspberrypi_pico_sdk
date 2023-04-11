@@ -15,11 +15,13 @@ add_executable(pico_micro_ros_example
 )
 target_link_libraries(pico_micro_ros_example
     pico_stdlib
+    hardware_pwm
     microros
 )
 
 target_include_directories(pico_micro_ros_example PUBLIC
     libmicroros/include
+    #    $ENV{PICO_SDK_PATH}/src/rp2_common/hardware_include
 )
 
 SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")

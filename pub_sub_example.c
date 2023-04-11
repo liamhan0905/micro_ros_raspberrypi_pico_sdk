@@ -8,7 +8,14 @@
 #include "pico/stdlib.h"
 #include "pico_uart_transports.h"
 
+// pwm control
+#include "hardware/pwm.h"
+
 const uint LED_PIN = 25;
+const uint MOTOR_1_IN1_PIN = 0;
+const uint MOTOR_1_IN2_PIN = 1;
+const uint MOTOR_2_IN1_PIN = 2;
+const uint MOTOR_2_IN2_PIN = 3;
 
 rcl_publisher_t publisher;
 rcl_subscription_t subscriber;
@@ -49,6 +56,21 @@ int main()
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
 
+//////
+    gpio_init(MOTOR_1_IN1_PIN);
+    gpio_init(MOTOR_1_IN2_PIN);
+    gpio_init(MOTOR_2_IN1_PIN);
+    gpio_init(MOTOR_2_IN2_PIN);
+
+    gpio_set_dir(MOTOR_1_IN1_PIN, GPIO_OUT);
+    gpio_set_dir(MOTOR_1_IN2_PIN, GPIO_OUT);
+    gpio_set_dir(MOTOR_2_IN1_PIN, GPIO_OUT);
+    gpio_set_dir(MOTOR_2_IN2_PIN, GPIO_OUT);
+//////
+
+
+
+
     rcl_timer_t timer;
     rcl_node_t node;
     rcl_allocator_t allocator;
@@ -79,7 +101,7 @@ int main()
         &publisher,
         &node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-        "pub");
+        "TESTpub");
 
     // create subscriber
     rclc_subscription_init_default(
@@ -108,6 +130,26 @@ int main()
     {
         rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
 	sleep_ms(100);
+
+        gpio_put(MOTOR_1_IN1_PIN, 1);
+        gpio_put(MOTOR_1_IN2_PIN, 0);
+        gpio_put(MOTOR_2_IN1_PIN, 1);
+        gpio_put(MOTOR_2_IN2_PIN, 0);
+        sleep_ms(1000);  // Run for 1 second
+
+        // Set the motor to turn counterclockwise at 50% speed
+        gpio_put(MOTOR_1_IN1_PIN, 0);
+	gpio_put(MOTOR_1_IN2_PIN, 1);
+	gpio_put(MOTOR_2_IN1_PIN, 0);
+        gpio_put(MOTOR_2_IN2_PIN, 1);
+        sleep_ms(1000);  // Run for 1 second
+
+        // Stop the motor
+        gpio_put(MOTOR_1_IN1_PIN, 0);
+        gpio_put(MOTOR_1_IN2_PIN, 0);
+        gpio_put(MOTOR_2_IN1_PIN, 0);
+        gpio_put(MOTOR_2_IN2_PIN, 0);
+        sleep_ms(1000);  // Run for 1 second
     }
     return 0;
 }
