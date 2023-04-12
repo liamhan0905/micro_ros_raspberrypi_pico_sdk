@@ -10,6 +10,7 @@
 
 // pwm control
 #include "hardware/pwm.h"
+#include "hardware/gpio.h"
 
 const uint LED_PIN = 25;
 const uint MOTOR_1_IN1_PIN = 0;
@@ -24,6 +25,7 @@ rcl_subscription_t subscriber;
 std_msgs__msg__Int32 send_msg;
 std_msgs__msg__Int32 recv_msg;
 
+#define PWM_FREQUENCY 10000
 void led_toggle() {
       gpio_put(LED_PIN, 0);
       sleep_ms(100);
@@ -74,19 +76,18 @@ int main()
     gpio_set_dir(LED_PIN, GPIO_OUT);
 
 //////
+
+
     gpio_init(MOTOR_1_IN1_PIN);
     gpio_init(MOTOR_1_IN2_PIN);
-//    gpio_init(MOTOR_2_IN1_PIN);
-//    gpio_init(MOTOR_2_IN2_PIN);
     gpio_init(MOTOR_1_PWM);
-//    gpio_init(MOTOR_2_PWM);
 
     gpio_set_dir(MOTOR_1_IN1_PIN, GPIO_OUT);
     gpio_set_dir(MOTOR_1_IN2_PIN, GPIO_OUT);
-//    gpio_set_dir(MOTOR_2_IN1_PIN, GPIO_OUT);
-//    gpio_set_dir(MOTOR_2_IN2_PIN, GPIO_OUT);
-    gpio_set_dir(MOTOR_1_PWM, GPIO_OUT);
-//    gpio_set_dir(MOTOR_2_PWM, GPIO_OUT);
+    gpio_set_function(MOTOR_1_PWM, GPIO_FUNC_PWM);
+    // Set up PWM
+
+    //gpio_set_dir(MOTOR_1_PWM, GPIO_OUT);
 //////
 
     // Define the PWM frequency
@@ -99,18 +100,28 @@ int main()
     #define MOTOR_SPEED 100
 
     // Initialize the PWM hardware
-    pwm_config pwm_config_a = pwm_get_default_config();
-    pwm_config_set_wrap(&pwm_config_a, PWM_RANGE);
-    pwm_config_set_clkdiv(&pwm_config_a, 4.0f);
-    pwm_init(pwm_gpio_to_slice_num(MOTOR_1_PWM), &pwm_config_a, true);
+  //  pwm_config pwm_config_a = pwm_get_default_config();
+  //  pwm_config_set_wrap(&pwm_config_a, PWM_RANGE);
+  //  pwm_config_set_clkdiv(&pwm_config_a, 4.0f);
+  //  pwm_init(pwm_gpio_too_slice_num(MOTOR_1_PWM), &pwm_config_a, true);
+ 
  //   pwm_config pwm_config_b = pwm_get_default_config();
  //   pwm_config_set_wrap(&pwm_config_b, PWM_RANGE);
  //   pwm_config_set_clkdiv(&pwm_config_b, 4.0f);
  //   pwm_init(pwm_gpio_to_slice_num(MOTOR_2_PWM), &pwm_config_b, true);
 
+    uint slice_num = pwm_gpio_to_slice_num(MOTOR_1_PWM);
+    pwm_config config = pwm_get_default_config();
+    pwm_init(slice_num, &config, true);
+    uint8_t duty_cycle = 0;
+    pwm_set_wrap(slice_num, 65535);
+    pwm_set_clkdiv(slice_num, 2.0f);
+
+
+
     // Set the PWM frequency
-    pwm_set_wrap(pwm_gpio_to_slice_num(MOTOR_1_PWM), PWM_RANGE);
-    pwm_set_clkdiv(pwm_gpio_to_slice_num(MOTOR_1_PWM), 4.0f);
+  //  pwm_set_wrap(pwm_gpio_to_slice_num(MOTOR_1_PWM), PWM_RANGE);
+  //  pwm_set_clkdiv(pwm_gpio_to_slice_num(MOTOR_1_PWM), 4.0f);
  //   pwm_set_wrap(pwm_gpio_to_slice_num(MOTOR_2_PWM), PWM_RANGE);
  //   pwm_set_clkdiv(pwm_gpio_to_slice_num(MOTOR_2_PWM), 4.0f);
 
@@ -183,6 +194,8 @@ int main()
         // Rotate the motor in the current direction
         gpio_put(MOTOR_1_IN1_PIN, 1);
         gpio_put(MOTOR_1_IN2_PIN, 0);
+        pwm_set_gpio_level(MOTOR_1_PWM, 30000);
+	
        // gpio_put(MOTOR_2_IN1_PIN, 1);
        // gpio_put(MOTOR_2_IN2_PIN, 0);
 
@@ -190,12 +203,21 @@ int main()
 
         // Stop the motor
         gpio_put(MOTOR_1_IN1_PIN, 0);
-        gpio_put(MOTOR_1_IN2_PIN, 0);
+        gpio_put(MOTOR_1_IN2_PIN, 1);
+        pwm_set_gpio_level(MOTOR_1_PWM, 30000);
        // gpio_put(MOTOR_2_IN1_PIN, 0);
        // gpio_put(MOTOR_2_IN2_PIN, 0);
 
         sleep_ms(1000);  // Wait for 1 second
 
+        gpio_put(MOTOR_1_IN1_PIN, 1);
+        gpio_put(MOTOR_1_IN2_PIN, 0);
+        pwm_set_gpio_level(MOTOR_1_PWM, 10000);
+
+        sleep_ms(1000);  // Wait for 1 second
+        gpio_put(MOTOR_1_IN1_PIN, 0);
+        gpio_put(MOTOR_1_IN2_PIN, 1);
+        pwm_set_gpio_level(MOTOR_1_PWM, 10000);
        // gpio_put(MOTOR_1_IN1_PIN, 1);
        // sleep_us(750);
        // gpio_put(MOTOR_1_IN2_PIN, 0);
