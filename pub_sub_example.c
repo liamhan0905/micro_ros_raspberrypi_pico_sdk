@@ -13,12 +13,26 @@
 #include "hardware/gpio.h"
 
 const uint LED_PIN = 25;
-const uint MOTOR_1_IN1_PIN = 0;
-const uint MOTOR_1_IN2_PIN = 1;
-const uint MOTOR_1_PWM = 2;
-//const uint MOTOR_2_IN1_PIN = 3;
-//const uint MOTOR_2_IN2_PIN = 4;
-//const uint MOTOR_2_PWM = 5;
+
+// motor 1 (front right)
+const uint MOTOR_1_IN1_PIN = 10;
+const uint MOTOR_1_IN2_PIN = 11;
+const uint MOTOR_1_PWM = 12;
+
+// motor 2 (rear right)
+const uint MOTOR_2_IN1_PIN = 3;
+const uint MOTOR_2_IN2_PIN = 4;
+const uint MOTOR_2_PWM = 5;
+
+// motor 3 (rear left)
+const uint MOTOR_3_IN1_PIN = 6;
+const uint MOTOR_3_IN2_PIN = 7;
+const uint MOTOR_3_PWM = 8;
+
+// motor 4 (front left)
+const uint MOTOR_4_IN1_PIN = 10;
+const uint MOTOR_4_IN2_PIN = 11;
+const uint MOTOR_4_PWM = 12;
 
 rcl_publisher_t publisher;
 rcl_subscription_t subscriber;
@@ -59,6 +73,16 @@ void rotate_motor(int pin1, int pin2, float duty_cycle_percent) {
         gpio_put(pin2, 0);
         sleep_us(off_time); // adjust the length of time IN2 is off
     }
+}
+
+void motorInPinInit(){
+    gpio_init(MOTOR_1_IN1_PIN);
+    gpio_init(MOTOR_1_IN2_PIN);
+    gpio_init(MOTOR_1_PWM);
+
+    gpio_set_dir(MOTOR_1_IN1_PIN, GPIO_OUT);
+    gpio_set_dir(MOTOR_1_IN2_PIN, GPIO_OUT);
+    gpio_set_function(MOTOR_1_PWM, GPIO_FUNC_PWM);
 }
 
 int main()
@@ -192,9 +216,15 @@ int main()
 //        pwm_set_gpio_level(MOTOR_2_PWM, PWM_RANGE/2);
 
         // Rotate the motor in the current direction
+        //gpio_put(MOTOR_1_IN1_PIN, 1);
+        //gpio_put(MOTOR_1_IN2_PIN, 0);
+	// motor 1 goes C
+	// motor 2 goes C 
+	// motor 3 goes C 
+	// motor 4 goes C 
         gpio_put(MOTOR_1_IN1_PIN, 1);
         gpio_put(MOTOR_1_IN2_PIN, 0);
-        pwm_set_gpio_level(MOTOR_1_PWM, 30000);
+        pwm_set_gpio_level(MOTOR_1_PWM, 50000);
 	
        // gpio_put(MOTOR_2_IN1_PIN, 1);
        // gpio_put(MOTOR_2_IN2_PIN, 0);
@@ -202,47 +232,23 @@ int main()
         sleep_ms(1000);  // Rotate for 1 second
 
         // Stop the motor
-        gpio_put(MOTOR_1_IN1_PIN, 0);
-        gpio_put(MOTOR_1_IN2_PIN, 1);
-        pwm_set_gpio_level(MOTOR_1_PWM, 30000);
+//        gpio_put(MOTOR_1_IN1_PIN, 0);
+//        gpio_put(MOTOR_1_IN2_PIN, 1);
+//        pwm_set_gpio_level(MOTOR_1_PWM, 50000);
        // gpio_put(MOTOR_2_IN1_PIN, 0);
        // gpio_put(MOTOR_2_IN2_PIN, 0);
 
-        sleep_ms(1000);  // Wait for 1 second
-
-        gpio_put(MOTOR_1_IN1_PIN, 1);
-        gpio_put(MOTOR_1_IN2_PIN, 0);
-        pwm_set_gpio_level(MOTOR_1_PWM, 10000);
-
-        sleep_ms(1000);  // Wait for 1 second
-        gpio_put(MOTOR_1_IN1_PIN, 0);
-        gpio_put(MOTOR_1_IN2_PIN, 1);
-        pwm_set_gpio_level(MOTOR_1_PWM, 10000);
-       // gpio_put(MOTOR_1_IN1_PIN, 1);
-       // sleep_us(750);
-       // gpio_put(MOTOR_1_IN2_PIN, 0);
-       // sleep_us(250);
-       // gpio_put(MOTOR_2_IN1_PIN, 1);
-       // sleep_us(750);
-       // gpio_put(MOTOR_2_IN2_PIN, 0);
-       // sleep_us(250);
-
-       // // Set the motor to turn counterclockwise at 50% speed
-       // gpio_put(MOTOR_1_IN1_PIN, 0);
-       // sleep_us(250);
-       // gpio_put(MOTOR_1_IN2_PIN, 1);
-       // sleep_us(750);
-       // gpio_put(MOTOR_2_IN1_PIN, 0);
-       // sleep_us(250);
-       // gpio_put(MOTOR_2_IN2_PIN, 1);
-       // sleep_us(750);
-
-       // // Stop the motor
-       // gpio_put(MOTOR_1_IN1_PIN, 0);
-       // gpio_put(MOTOR_1_IN2_PIN, 0);
-       // gpio_put(MOTOR_2_IN1_PIN, 0);
-       // gpio_put(MOTOR_2_IN2_PIN, 0);
-       // sleep_ms(1000);  // Run for 1 second
+//        sleep_ms(1000);  // Wait for 1 second
+//
+//        gpio_put(MOTOR_1_IN1_PIN, 1);
+//        gpio_put(MOTOR_1_IN2_PIN, 0);
+//        pwm_set_gpio_level(MOTOR_1_PWM, 30000);
+//
+//        sleep_ms(1000);  // Wait for 1 second
+//        gpio_put(MOTOR_1_IN1_PIN, 0);
+//        gpio_put(MOTOR_1_IN2_PIN, 1);
+//        pwm_set_gpio_level(MOTOR_1_PWM, 30000);
+//
     }
     return 0;
 }
