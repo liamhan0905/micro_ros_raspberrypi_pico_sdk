@@ -12,6 +12,7 @@ link_directories(libmicroros)
 add_executable(pico_micro_ros_example
     pub_sub_example.c
     pico_uart_transport.c
+    motorDriver.c
 )
 target_link_libraries(pico_micro_ros_example
     pico_stdlib
@@ -19,9 +20,12 @@ target_link_libraries(pico_micro_ros_example
     microros
 )
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 target_include_directories(pico_micro_ros_example PUBLIC
     libmicroros/include
     #    $ENV{PICO_SDK_PATH}/src/rp2_common/hardware_include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")

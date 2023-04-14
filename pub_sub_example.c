@@ -12,6 +12,9 @@
 #include "hardware/pwm.h"
 #include "hardware/gpio.h"
 
+// include custom files
+#include "motorDriver.h"
+
 const uint LED_PIN = 25;
 
 // motor 1 (front right)
