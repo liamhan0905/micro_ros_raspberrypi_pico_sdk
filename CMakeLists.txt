@@ -10,8 +10,9 @@ pico_sdk_init()
 
 link_directories(libmicroros)
 add_executable(pico_micro_ros_example
-    pub_sub_example.c
+    pub_sub_example.cpp
     pico_uart_transport.c
+    motorDriver.cpp
 )
 target_link_libraries(pico_micro_ros_example
     pico_stdlib

@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <rcl/rcl.h>
 #include <rcl/error_handling.h>
@@ -12,8 +16,11 @@
 #include "hardware/pwm.h"
 #include "hardware/gpio.h"
 
+#ifdef __cplusplus
+}
+#endif
 // include custom files
-//#include "motorDriver.h"
+#include "motorDriver.hpp"
 
 
 const uint LED_PIN = 25;
@@ -88,11 +95,6 @@ void motorInPinInit(){
     gpio_set_function(MOTOR_1_PWM, GPIO_FUNC_PWM);
 }
 
-typedef struct {
-    uint32_t in1Pin;
-    uint32_t in2Pin;
-    uint32_t pwmPin;
-} motorDriver;
 
 int main()
 {
@@ -110,11 +112,11 @@ int main()
 
 //////
 
-    motorDriver m1 = {0,1,2};
-    motorDriver m2 = {3,4,5};
-    motorDriver m3 = {6,7,8};
-    motorDriver m4 = {10,11,12};
-    motorDriver motorDriverArr[4] = {m1, m2, m3, m4};
+//    motorDriver m1 = {0,1,2};
+//    motorDriver m2 = {3,4,5};
+//    motorDriver m3 = {6,7,8};
+//    motorDriver m4 = {10,11,12};
+//    motorDriver motorDriverArr[4] = {m1, m2, m3, m4};
 
     gpio_init(MOTOR_1_IN1_PIN);
     gpio_init(MOTOR_1_IN2_PIN);

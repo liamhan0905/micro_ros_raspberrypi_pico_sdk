@@ -1,14 +1,14 @@
-// motorDriver.cpp
-#include "motorDriver.h"
+#include "hardware/pwm.h"
+#include "hardware/gpio.h"
+#include "motorDriver.hpp"
 
-motorDriver::motorDriver(uint8_t inPin1, uint8_t inPin2, uint8_t pwmPin) {
-  m_inPin1 = inPin1;
-  m_inPin2 = inPin2;
-  m_pwmPin = pwmPin;
+motorDriver::motorDriver(uint8_t inPin1, uint8_t inPin2, uint8_t pwmPin)
+	:_inPin1(inPin1), _inPin2(inPin2), _pwmPin(pwmPin){
+}
 
-//  pinMode(m_inPin1, OUTPUT);
-//  pinMode(m_inPin2, OUTPUT);
-//  pinMode(m_pwmPin, OUTPUT);
+motorDriver::initPins(){
+	gpio_init
+
 }
 
 void motorDriver::setSpeed(int speed) {
