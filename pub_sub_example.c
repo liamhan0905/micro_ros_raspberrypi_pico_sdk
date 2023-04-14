@@ -13,14 +13,15 @@
 #include "hardware/gpio.h"
 
 // include custom files
-#include "motorDriver.h"
+//#include "motorDriver.h"
+
 
 const uint LED_PIN = 25;
 
 // motor 1 (front right)
-const uint MOTOR_1_IN1_PIN = 10;
-const uint MOTOR_1_IN2_PIN = 11;
-const uint MOTOR_1_PWM = 12;
+const uint MOTOR_1_IN1_PIN = 0;
+const uint MOTOR_1_IN2_PIN = 1;
+const uint MOTOR_1_PWM = 2;
 
 // motor 2 (rear right)
 const uint MOTOR_2_IN1_PIN = 3;
@@ -88,6 +89,12 @@ void motorInPinInit(){
     gpio_set_function(MOTOR_1_PWM, GPIO_FUNC_PWM);
 }
 
+typedef struct {
+    uint32_t in1Pin;
+    uint32_t in2Pin;
+    uint32_t pwmPin;
+} motorDriver;
+
 int main()
 {
     rmw_uros_set_custom_transport(
@@ -104,6 +111,11 @@ int main()
 
 //////
 
+    motorDriver m1 = {0,1,2};
+    motorDriver m2 = {3,4,5};
+    motorDriver m3 = {6,7,8};
+    motorDriver m4 = {10,11,12};
+    motorDriver motorDriverArr[4] = {m1, m2, m3, m4};
 
     gpio_init(MOTOR_1_IN1_PIN);
     gpio_init(MOTOR_1_IN2_PIN);
