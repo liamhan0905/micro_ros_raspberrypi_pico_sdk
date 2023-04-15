@@ -20,7 +20,7 @@ extern "C" {
 }
 #endif
 // include custom files
-#include "motorDriver.hpp"
+#include "robotControl.hpp"
 
 #include <vector>
 #include <memory>
@@ -82,16 +82,24 @@ int main()
     gpio_set_dir(LED_PIN, GPIO_OUT);
 
 //////
+    MotorControl motor1 = MotorControl(0,1,2);
+    MotorControl motor2 = MotorControl(3,4,5);
+    MotorControl motor3 = MotorControl(6,7,8);
+    MotorControl motor4 = MotorControl(10,11,12);
+    RobotControl robot {motor1, motor2, motor3, motor4};
 
-    motorDriver m1 {0,1,2}; // Front Right
-    motorDriver m2 {3,4,5}; // Rear Right
-    motorDriver m3 {6,7,8}; // Rear Left
-    motorDriver m4 {10,11,12}; // Front Left
-    std::vector<motorDriver> motorDriverVec {m1, m2, m3, m4};
 
-    for (auto motorDriverElem : motorDriverVec){
-      motorDriverElem.initPins();
-    }
+//    auto motor1 = std::make_unique<motorControl>(0,1,2);
+//    auto motor2 = std::make_unique<motorControl>(3,4,5);
+//    auto motor3 = std::make_unique<motorControl>(6,7,8);
+//    auto motor4 = std::make_unique<motorControl>(10,11,12);
+//
+//    auto robotControl = {std::move(motor1), std::move(motor2), std::move(motor3), std::move(motor4)};
+//    std::vector<motorControl> motorDriverVec {m1, m2, m3, m4};
+//
+//    for (auto motorControlElem : motorDriverVec){
+//      motorControlElem.initPins();
+//    }
  
 
 
@@ -143,7 +151,7 @@ int main()
         &publisher,
         &node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-        "TESTpub");
+        "pub");
 
     // create subscriber
     rclc_subscription_init_default(
@@ -168,14 +176,19 @@ int main()
 
     gpio_put(LED_PIN, 1);
 
+    robot.setSpeed(0.4);
     while (true)
     {
         rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
 	sleep_ms(100);
-	m2.setPwm(50000);
-	m2.rotateCC();
-	m4.setPwm(30000);
-	m4.rotateCC();
+	robot.moveForward();
+	sleep_ms(2000);
+	robot.moveBackward();
+	sleep_ms(2000);
+	robot.turnRight();
+	sleep_ms(2000);
+	robot.turnLeft();
+	sleep_ms(2000);
 
 
         // Rotate the motor in the current direction
