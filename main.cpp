@@ -8,6 +8,7 @@ extern "C" {
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
 #include <std_msgs/msg/int32.h>
+#include <geometry_msgs/msg/twist.h>
 #include <rmw_microros/rmw_microros.h>
 #include "pico/stdlib.h"
 #include "pico_uart_transports.h"
@@ -31,6 +32,7 @@ rcl_publisher_t publisher;
 rcl_subscription_t subscriber;
 std_msgs__msg__Int32 send_msg;
 std_msgs__msg__Int32 recv_msg;
+geometry_msgs__msg__Twist twist_msg;
 
 void led_toggle() {
       gpio_put(LED_PIN, 0);
@@ -52,21 +54,6 @@ void subscription_callback(const void * msgin)
   led_toggle();
 }
 
-void rotate_motor(int pin1, int pin2, float duty_cycle_percent) {
-    float on_time = 2000.0 * duty_cycle_percent / 100.0; // 2000 is the period of PWM signal in microseconds
-    float off_time = 2000.0 - on_time;
-    while(1) {
-        gpio_put(pin1, 1);
-        sleep_us(on_time); // adjust the length of time IN1 is on
-        gpio_put(pin1, 0);
-        sleep_us(off_time); // adjust the length of time IN1 is off
-        gpio_put(pin2, 1);
-        sleep_us(on_time); // adjust the length of time IN2 is on
-        gpio_put(pin2, 0);
-        sleep_us(off_time); // adjust the length of time IN2 is off
-    }
-}
-
 int main()
 {
     rmw_uros_set_custom_transport(
@@ -81,45 +68,11 @@ int main()
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
 
-//////
     MotorControl motor1 = MotorControl(0,1,2);
     MotorControl motor2 = MotorControl(3,4,5);
     MotorControl motor3 = MotorControl(6,7,8);
     MotorControl motor4 = MotorControl(10,11,12);
     RobotControl robot {motor1, motor2, motor3, motor4};
-
-
-//    auto motor1 = std::make_unique<motorControl>(0,1,2);
-//    auto motor2 = std::make_unique<motorControl>(3,4,5);
-//    auto motor3 = std::make_unique<motorControl>(6,7,8);
-//    auto motor4 = std::make_unique<motorControl>(10,11,12);
-//
-//    auto robotControl = {std::move(motor1), std::move(motor2), std::move(motor3), std::move(motor4)};
-//    std::vector<motorControl> motorDriverVec {m1, m2, m3, m4};
-//
-//    for (auto motorControlElem : motorDriverVec){
-//      motorControlElem.initPins();
-//    }
- 
-
-
-
-    // Need to use it
-    //void set_pwm_duty_cycle_percent(uint slice_num, uint16_t percent) {
-    //uint32_t max_duty = pwm_get_wrap(slice_num) + 1;
-    //uint32_t duty = (percent * max_duty) / 100;
-    //pwm_set_duty(slice_num, duty);
-    //}
-
-    
-    // Initialize the PWM hardware
- //   uint slice_num = pwm_gpio_to_slice_num(MOTOR_1_PWM);
- //   pwm_config config = pwm_get_default_config();
- //   pwm_init(slice_num, &config, true);
- //   uint8_t duty_cycle = 0;
- //   pwm_set_wrap(slice_num, 65535);
- //   pwm_set_clkdiv(slice_num, 2.0f);
-
 
     rcl_timer_t timer;
     rcl_node_t node;
@@ -189,14 +142,6 @@ int main()
 	sleep_ms(2000);
 	robot.turnLeft();
 	sleep_ms(2000);
-
-
-        // Rotate the motor in the current direction
-        //gpio_put(MOTOR_1_IN1_PIN, 1);
-        //gpio_put(MOTOR_1_IN2_PIN, 0);
-        //pwm_set_gpio_level(MOTOR_1_PWM, 50000);
-
-        //sleep_ms(1000);  // Rotate for 1 second
     }
     return 0;
 }
