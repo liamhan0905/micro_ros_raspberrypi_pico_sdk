@@ -22,28 +22,10 @@ extern "C" {
 // include custom files
 #include "motorDriver.hpp"
 
+#include <vector>
+#include <memory>
 
 const uint LED_PIN = 25;
-
-// motor 1 (front right)
-const uint MOTOR_1_IN1_PIN = 0;
-const uint MOTOR_1_IN2_PIN = 1;
-const uint MOTOR_1_PWM = 2;
-
-// motor 2 (rear right)
-const uint MOTOR_2_IN1_PIN = 3;
-const uint MOTOR_2_IN2_PIN = 4;
-const uint MOTOR_2_PWM = 5;
-
-// motor 3 (rear left)
-const uint MOTOR_3_IN1_PIN = 6;
-const uint MOTOR_3_IN2_PIN = 7;
-const uint MOTOR_3_PWM = 8;
-
-// motor 4 (front left)
-const uint MOTOR_4_IN1_PIN = 10;
-const uint MOTOR_4_IN2_PIN = 11;
-const uint MOTOR_4_PWM = 12;
 
 rcl_publisher_t publisher;
 rcl_subscription_t subscriber;
@@ -85,17 +67,6 @@ void rotate_motor(int pin1, int pin2, float duty_cycle_percent) {
     }
 }
 
-void motorInPinInit(){
-    gpio_init(MOTOR_1_IN1_PIN);
-    gpio_init(MOTOR_1_IN2_PIN);
-    gpio_init(MOTOR_1_PWM);
-
-    gpio_set_dir(MOTOR_1_IN1_PIN, GPIO_OUT);
-    gpio_set_dir(MOTOR_1_IN2_PIN, GPIO_OUT);
-    gpio_set_function(MOTOR_1_PWM, GPIO_FUNC_PWM);
-}
-
-
 int main()
 {
     rmw_uros_set_custom_transport(
@@ -112,27 +83,18 @@ int main()
 
 //////
 
-//    motorDriver m1 = {0,1,2};
-//    motorDriver m2 = {3,4,5};
-//    motorDriver m3 = {6,7,8};
-//    motorDriver m4 = {10,11,12};
-//    motorDriver motorDriverArr[4] = {m1, m2, m3, m4};
+    motorDriver m1 {0,1,2}; // Front Right
+    motorDriver m2 {3,4,5}; // Rear Right
+    motorDriver m3 {6,7,8}; // Rear Left
+    motorDriver m4 {10,11,12}; // Front Left
+    std::vector<motorDriver> motorDriverVec {m1, m2, m3, m4};
 
-    gpio_init(MOTOR_1_IN1_PIN);
-    gpio_init(MOTOR_1_IN2_PIN);
-    gpio_init(MOTOR_1_PWM);
+    for (auto motorDriverElem : motorDriverVec){
+      motorDriverElem.initPins();
+    }
+ 
 
-    gpio_set_dir(MOTOR_1_IN1_PIN, GPIO_OUT);
-    gpio_set_dir(MOTOR_1_IN2_PIN, GPIO_OUT);
-    gpio_set_function(MOTOR_1_PWM, GPIO_FUNC_PWM);
-    // Set up PWM
 
-    //gpio_set_dir(MOTOR_1_PWM, GPIO_OUT);
-//////
-
-    // Define the PWM frequency
-    // Define the duty cycle range
-    #define PWM_RANGE 255
 
     // Need to use it
     //void set_pwm_duty_cycle_percent(uint slice_num, uint16_t percent) {
@@ -143,12 +105,12 @@ int main()
 
     
     // Initialize the PWM hardware
-    uint slice_num = pwm_gpio_to_slice_num(MOTOR_1_PWM);
-    pwm_config config = pwm_get_default_config();
-    pwm_init(slice_num, &config, true);
-    uint8_t duty_cycle = 0;
-    pwm_set_wrap(slice_num, 65535);
-    pwm_set_clkdiv(slice_num, 2.0f);
+ //   uint slice_num = pwm_gpio_to_slice_num(MOTOR_1_PWM);
+ //   pwm_config config = pwm_get_default_config();
+ //   pwm_init(slice_num, &config, true);
+ //   uint8_t duty_cycle = 0;
+ //   pwm_set_wrap(slice_num, 65535);
+ //   pwm_set_clkdiv(slice_num, 2.0f);
 
 
     rcl_timer_t timer;
@@ -210,16 +172,18 @@ int main()
     {
         rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
 	sleep_ms(100);
+	m2.setPwm(50000);
+	m2.rotateCC();
+	m4.setPwm(30000);
+	m4.rotateCC();
 
-        // Set the PWM duty cycle to 50%
-        // pwm_set_gpio_level(MOTOR_1_PWM, PWM_RANGE/2);
 
         // Rotate the motor in the current direction
-        gpio_put(MOTOR_1_IN1_PIN, 1);
-        gpio_put(MOTOR_1_IN2_PIN, 0);
-        pwm_set_gpio_level(MOTOR_1_PWM, 50000);
+        //gpio_put(MOTOR_1_IN1_PIN, 1);
+        //gpio_put(MOTOR_1_IN2_PIN, 0);
+        //pwm_set_gpio_level(MOTOR_1_PWM, 50000);
 
-        sleep_ms(1000);  // Rotate for 1 second
+        //sleep_ms(1000);  // Rotate for 1 second
     }
     return 0;
 }
