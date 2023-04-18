@@ -2,4 +2,6 @@
 pico-sdk
 libmicroros/
 *.swp
-*swo
+*.swo
+*.swm
+*.swn
