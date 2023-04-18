@@ -10,7 +10,7 @@ pico_sdk_init()
 
 link_directories(libmicroros)
 add_executable(main
-    main.cpp
+    src/main.cpp
     pico_uart_transport.c
     src/motorControl.cpp
     src/robotControl.cpp
