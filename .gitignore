@@ -1,2 +1,5 @@
 /build
 pico-sdk
+CMakeLists_backup.txt
+*.swo
+*.swp
