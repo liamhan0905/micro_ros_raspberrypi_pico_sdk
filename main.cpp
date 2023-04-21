@@ -40,51 +40,54 @@ MotorControl motor3 = MotorControl(6,7,8);
 MotorControl motor4 = MotorControl(9,10,11);
 RobotControl robot {motor1, motor2, motor3, motor4};
 
-void led_toggle() {
+void led_toggle(int time) {
       gpio_put(LED_PIN, 0);
-      sleep_ms(100);
+      sleep_ms(time);
       gpio_put(LED_PIN, 1);
 }
 
+
+enum class RobotState {
+    STOP,
+    MOVE_FORWARD,
+    MOVE_BACKWARD,
+    TURN_RIGHT,
+    TURN_LEFT
+};
+
+RobotState robotState = RobotState::STOP;
+
 void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 {
-  rcl_ret_t ret = rcl_publish(&publisher, &send_msg, NULL);
-  printf("Sent: %d\n",  (int)  send_msg.data);
-  send_msg.data = 100;
-}
-
-void mapTwistToCmd(){
+//  rcl_ret_t ret = rcl_publish(&publisher, &send_msg, NULL);
+//  printf("Sent: %d\n",  (int)  send_msg.data);
+//  send_msg.data = 100;
+  if (robotState == RobotState::MOVE_FORWARD)
+  {
+  	robot.setSpeed(0.4);
+  	robot.moveForward();
+  }
+  else if (robotState == RobotState::MOVE_BACKWARD)
+  {
+  	robot.setSpeed(0.4);
+  	robot.moveBackward();
+  }
 }
 
 void subscription_callback(const void * msgin)
 {
+//	gpio_put(LED_PIN,0);
+//	sleep_ms(1000);
   const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
   auto linear_x = msg->linear.x;
   auto angular_z = msg->angular.z;
-
-  if (linear_x != 0)
+  if (linear_x > 0)
   {
-    robot.setSpeed(linear_x);
-    if (linear_x > 0)
-    {
-      robot.moveForward();
-    }
-    else
-    {
-      robot.moveBackward();
-    }
-  }
-  else if (angular_z != 0)
+    robotState = RobotState::MOVE_FORWARD;
+  } 
+  else
   {
-    robot.setSpeed(angular_z);
-    if (angular_z > 0)
-    {
-      robot.turnRight();
-    }
-    else
-    {
-      robot.turnLeft();
-    }
+    robotState = RobotState::MOVE_BACKWARD;
   }
 }
 
@@ -145,7 +148,7 @@ int main()
     rclc_timer_init_default(
         &timer,
         &support,
-        RCL_MS_TO_NS(1000),
+        RCL_MS_TO_NS(100),
         timer_callback);
 
     send_msg.data = 0;
@@ -156,20 +159,10 @@ int main()
     rclc_executor_add_subscription(&executor, &subscriber, &recv_msg, &subscription_callback, ON_NEW_DATA);
 
     gpio_put(LED_PIN, 1);
-
-    robot.setSpeed(0.5);
     while (true)
     {
-        rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
-	sleep_ms(100);
-	robot.turnRight();
-	sleep_ms(3000);
-	robot.turnLeft();
-	sleep_ms(3000);
-//      motor4.rotateCC();
-//      sleep_ms(2000);
-//      motor4.rotateC();
-//      sleep_ms(2000);
+        rclc_executor_spin_some(&executor, RCL_MS_TO_NS(500));
+//	led_toggle(100);
     }
     return 0;
 }

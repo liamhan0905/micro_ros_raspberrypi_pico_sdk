@@ -41,7 +41,7 @@ void MotorControl::rotateCC()
 {
   gpio_put(_inPin1, 1);
   gpio_put(_inPin2, 0);
-  sleep_ms(5);
+//  sleep_ms(5);
 }
 
 void MotorControl::setPwm(int pwmVal)
@@ -53,12 +53,12 @@ void MotorControl::rotateC()
 {
   gpio_put(_inPin1, 0);
   gpio_put(_inPin2, 1);
-  sleep_ms(5);
+//  sleep_ms(5);
 }
 
 void MotorControl::stop()
 {
   gpio_put(_inPin1, 0);
   gpio_put(_inPin2, 0);
-  sleep_ms(5);
+//  sleep_ms(5);
 }
