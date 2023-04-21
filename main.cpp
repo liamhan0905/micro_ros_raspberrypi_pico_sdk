@@ -59,9 +59,7 @@ RobotState robotState = RobotState::STOP;
 
 void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 {
-//  rcl_ret_t ret = rcl_publish(&publisher, &send_msg, NULL);
-//  printf("Sent: %d\n",  (int)  send_msg.data);
-//  send_msg.data = 100;
+  //TODO: for now just setting manual speed for testing. will assign the linear_x speed later
   if (robotState == RobotState::MOVE_FORWARD)
   {
   	robot.setSpeed(0.4);
@@ -76,11 +74,10 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 
 void subscription_callback(const void * msgin)
 {
-//	gpio_put(LED_PIN,0);
-//	sleep_ms(1000);
   const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
   auto linear_x = msg->linear.x;
   auto angular_z = msg->angular.z;
+  //TODO: for now just setting manual speed for testing. will assign the linear_x speed later
   if (linear_x > 0)
   {
     robotState = RobotState::MOVE_FORWARD;
@@ -161,8 +158,15 @@ int main()
     gpio_put(LED_PIN, 1);
     while (true)
     {
-        rclc_executor_spin_some(&executor, RCL_MS_TO_NS(500));
-//	led_toggle(100);
+        rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
+
+	//NOTE: The below code worked well so it's not the moveForward or moveBackward method issue
+
+//	robot.setSpeed(0.5);
+//	robot.moveForward();
+//	sleep_ms(2000);
+//	robot.moveBackward();
+//	sleep_ms(2000);
     }
     return 0;
 }
