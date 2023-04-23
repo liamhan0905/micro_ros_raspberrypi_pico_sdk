@@ -62,13 +62,29 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
   //TODO: for now just setting manual speed for testing. will assign the linear_x speed later
   if (robotState == RobotState::MOVE_FORWARD)
   {
-  	robot.setSpeed(0.4);
-  	robot.moveForward();
+  	//robot.setSpeed(0.4);
+  	//robot.moveForward();
+	motor1.setPwm(30000);
+	motor2.setPwm(30000);
+	motor3.setPwm(30000);
+	motor4.setPwm(30000);
+	motor1.rotateC();
+	motor2.rotateC();
+	motor3.rotateC();
+	motor4.rotateC();
   }
   else if (robotState == RobotState::MOVE_BACKWARD)
   {
-  	robot.setSpeed(0.4);
-  	robot.moveBackward();
+  	//robot.setSpeed(0.4);
+  	//robot.moveBackward();
+	motor1.setPwm(30000);
+	motor2.setPwm(30000);
+	motor3.setPwm(30000);
+	motor4.setPwm(30000);
+	motor1.rotateCC();
+	motor2.rotateCC();
+	motor3.rotateCC();
+	motor4.rotateCC();
   }
 }
 
@@ -162,11 +178,38 @@ int main()
 
 	//NOTE: The below code worked well so it's not the moveForward or moveBackward method issue
 
-//	robot.setSpeed(0.5);
-//	robot.moveForward();
-//	sleep_ms(2000);
-//	robot.moveBackward();
-//	sleep_ms(2000);
+	//robot.setSpeed(0.5);
+	//robot.moveForward();
+	//sleep_ms(2000);
+	//robot.moveBackward();
+	//sleep_ms(2000);
+
+	//
+	//WORKED BELOW
+	//
+	//motor1.setPwm(30000);
+	//motor2.setPwm(30000);
+	//motor3.setPwm(30000);
+	//motor4.setPwm(30000);
+	//motor1.rotateC();
+	//sleep_ms(2000);
+	//motor1.rotateCC();
+	//sleep_ms(2000);
+
+	//motor2.rotateC();
+	//sleep_ms(2000);
+	//motor2.rotateCC();
+	//sleep_ms(2000);
+	//
+	//motor3.rotateC();
+	//sleep_ms(2000);
+	//motor3.rotateCC();
+	//sleep_ms(2000);
+	//
+	//motor4.rotateC();
+	//sleep_ms(2000);
+	//motor4.rotateCC();
+	//sleep_ms(2000);
     }
     return 0;
 }
