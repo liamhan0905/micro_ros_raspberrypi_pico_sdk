@@ -19,7 +19,7 @@ RobotControl::~RobotControl() {}
 // val should be between range [0,1]
 void RobotControl::setSpeed(float val)
 {
-  int targetPwm = _mapFloatToPWM(val);
+   int targetPwm = _mapFloatToPWM(val);
   _motor1.setPwm(targetPwm);
   _motor2.setPwm(targetPwm);
   _motor3.setPwm(targetPwm);
