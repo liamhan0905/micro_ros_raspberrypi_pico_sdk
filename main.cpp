@@ -34,10 +34,10 @@ std_msgs__msg__Int32 send_msg;
 std_msgs__msg__Int32 recv_msg;
 geometry_msgs__msg__Twist twist_msg;
 
-MotorControl motor1 = MotorControl(0,1,2);
-MotorControl motor2 = MotorControl(3,4,5);
-MotorControl motor3 = MotorControl(6,7,8);
-MotorControl motor4 = MotorControl(9,10,11);
+MotorControl motor1 {0,1,2};
+MotorControl motor2 {3,4,5};
+MotorControl motor3 {6,7,8};
+MotorControl motor4 {9,10,11};
 RobotControl robot {motor1, motor2, motor3, motor4};
 
 void led_toggle(int time) {
