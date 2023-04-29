@@ -2,18 +2,11 @@
 #include "motorControl.hpp"
 #include <cmath>
 
-// Constructors
-//RobotControl(std::unique_ptr<motorControl> motor1, std::unique_ptr<motorControl> motor2, std::unique_ptr<motorControl> motor3, std::unique_ptr<motorControl> motor4)
-//	: _motor1(std::move(motor1)), _motor2(std::move(motor2)), _motor3(std::move(motor3)), _motor4(std::move(motor4))
-//{
-//}
-
 RobotControl::RobotControl(MotorControl& motor1, MotorControl& motor2, MotorControl& motor3, MotorControl& motor4)
 	: _motor1(motor1), _motor2(motor2), _motor3(motor3), _motor4(motor4)
 {
 }
 
-// Destructor
 RobotControl::~RobotControl() {}
 
 // val should be between range [0,1]
